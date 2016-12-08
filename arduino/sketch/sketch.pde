@@ -1,46 +1,60 @@
 import processing.serial.*;
-
-boolean debug = false;
+import codeanticode.syphon.*;
 
 Serial arduino;
+SyphonServer syphon;
 ArrayList<Flipbook> flipbooks;
 
 void settings() {
-  size(400, 800, P3D);
+  size(400, 800, P2D);
+  PJOGL.profile = 1;
 }
 
 void setup() {
   // printArray(Serial.list());
-  arduino = new Serial(this, Serial.list()[3], 9600);
+  try {
+    arduino = new Serial(this, Serial.list()[3], 9600);
+  } catch (ArrayIndexOutOfBoundsException e) {
+    arduino = null;
+  }
 
   flipbooks = new ArrayList<Flipbook>();
-  flipbooks.add(new Insect('A', 0, 0, width, height / 2));
-  flipbooks.add(new Sphere('B', 0, height / 2, width, height / 2));
+  flipbooks.add(new Top(this, 'A', 0, 0));
+  flipbooks.add(new Bottom(this, 'B', 0, height / 2, width, height / 2));
+
+  syphon = new SyphonServer(this, "flipbooks");
 
   background(0);
 }
 
 void draw() {
-  surface.setTitle(int(frameRate) + "fps");
-
-  if (debug) {
-    for (Flipbook f : flipbooks) {
-      f.frameCount++;
-      f.draw();
-    }
-  } else {
+  if (arduino != null) {
+    surface.setTitle(int(frameRate) + "fps");
     if (arduino.available() > 0) {
       String currentSerialMessage = arduino.readStringUntil('\n');
       for (Flipbook f : flipbooks) f.update(currentSerialMessage);
     }
+  } else {
+    surface.setTitle("(no arduino) " + int(frameRate) + "fps");
+    // for (Flipbook f : flipbooks) {
+      // f.frameCount++;
+      // f.draw();
+    // }
   }
+
+  syphon.sendScreen();
 }
 
 
 void keyPressed() {
-  if (key == ' ') debug = !debug;
   if (key == 'r') {
-    arduino.stop();
+    if (arduino != null) arduino.stop();
+    if (syphon != null) syphon.dispose();
     setup();
+  }
+
+  if (arduino == null) {
+    if (key == 'a') for (Flipbook f : flipbooks) f.update("A0");
+    else if (key == 'z') for (Flipbook f : flipbooks) f.update("B0");
   }
 }
