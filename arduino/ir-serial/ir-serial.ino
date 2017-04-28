@@ -20,7 +20,7 @@ void loop() {
   state_B = digitalRead(SENSOR_B);
 
   if (state_A != pstate_A) Serial.println((state_A == LOW) ? "A0" : "A1");
-  if (state_B != pstate_B) Serial.println((state_A == LOW) ? "B0" : "B1");
+  if (state_B != pstate_B) Serial.println((state_B == LOW) ? "B0" : "B1");
 
 
   pstate_A = state_A;
