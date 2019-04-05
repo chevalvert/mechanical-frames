@@ -12,10 +12,11 @@ float[][] terrain;
 
 void settings() {
   // fullScreen(P3D);
-  size(1600, 1000, P3D);
+  size(1400, 1200, P3D);
 }
 
 void setup() {
+  noCursor();
   cols = w / scl;
   rows = h / scl;
 

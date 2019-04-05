@@ -21,7 +21,7 @@ void setup () {
   // syphon = new SyphonServer(this, "flipbooks");
 
   try {
-    arduino = new Serial(this, Serial.list()[3], 9600);
+    arduino = new Serial(this, Serial.list()[5], 9600);
   } catch (ArrayIndexOutOfBoundsException e) {
     arduino = null;
   }
